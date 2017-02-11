@@ -5,7 +5,7 @@
 default:
 	cd .. && $(MAKE) lib
 
-LIB = libfs.a libfs.dylib
+LIB = libfs.a #libfs.dylib
 lib: $(LIB)
 
 
@@ -27,13 +27,12 @@ OPT += -DCHECK  # slow assersions (turn on if you encounter a problem)
 
 WOPT    ?= -Wall
 CPPFLAGS  := -O3 $(WOPT) $(OPENMP) $(OPT)
-LIBS    := -lm #-lhdf5
+LIBS    := -lm
 
 # Define paths of FFTW3 & GSL libraries if necessary.
 
 FFTW3_DIR ?= #e.g. /Users/jkoda/Research/opt/gcc/fftw3
 GSL_DIR   ?= #e.g. /Users/jkoda/Research/opt/gcc/gsl
-#HDF5P_DIR ?= # parallel HDF5 library; e.g., brew install hdf5 --with-mpi
 
 DIR_PATH   = $(FFTW3_DIR) $(GSL_DIR)
 
@@ -43,12 +42,10 @@ LIBS      += $(foreach dir, $(DIR_PATH), -L$(dir)/lib)
 
 OBJS := comm.o msg.o config.o fft.o mem.o util.o
 OBJS += power.o cosmology.o gaussian.o
-OBJS += gadget_file.o 
 
 #
 # Linking libraries
 #
-# LIBS += -llua -ldl 
 LIBS += -lgsl -lgslcblas
 
 ifeq (,$(findstring -DDOUBLEPRECISION, $(OPT)))

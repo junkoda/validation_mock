@@ -25,7 +25,9 @@ generate_seedtable(const int nc, gsl_rng* random_generator);
 void gaussian_generate(const unsigned long seed,
 		       PowerSpectrum* const ps,
 		       const Float boxsize,
+		       const bool fix_amplitude,
 		       FFT* const fft_delta)
+
 {
   const size_t nc= fft_delta->nc; assert(nc > 0);
   const size_t local_nx= fft_delta->local_nx;
@@ -36,6 +38,8 @@ void gaussian_generate(const unsigned long seed,
   // from N-GenIC by Volker Springel
   msg_printf(msg_verbose, "Generating delta_k...\n");
   msg_printf(msg_info, "Random Seed = %lu\n", seed);
+  if(fix_amplitude)
+    msg_printf(msg_info, "Amplitude fixed");
 
   complex_t* delta_k= fft_delta->fk;
   
@@ -76,6 +80,7 @@ void gaussian_generate(const unsigned long seed,
       for(size_t iz=0; iz<nc/2; iz++) {
 	double phase= gsl_rng_uniform(random_generator)*2*M_PI;
 	double ampl;
+
 	do
 	  ampl = gsl_rng_uniform(random_generator);
 	while(ampl == 0.0);
@@ -115,8 +120,12 @@ void gaussian_generate(const unsigned long seed,
 	if(fabs(kvec[2]) > knq)
 	  continue;
 #endif
-	
-	double delta2= -log(ampl)*fac_2pi3*ps->P(kmag);
+
+	double delta2;
+	if(fix_amplitude)
+	  delta2= fac_2pi3*ps->P(kmag);
+	else
+	  delta2= -log(ampl)*fac_2pi3*ps->P(kmag);
 	
 	double delta_k_mag= fac*sqrt(delta2);
 	// delta_k_mag -- |delta_k| extrapolated to a=1

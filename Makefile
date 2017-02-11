@@ -1,7 +1,8 @@
-DIRS = lib
+DIRS = lib exec
 
-.PHONY: lib clean check
 all: $(DIRS)
+
+.PHONY: lib exec clean
 
 #
 # Set compilers and options
@@ -15,6 +16,9 @@ export CC CXX OPT
 
 lib:
 	cd lib && $(MAKE) lib
+
+exec:
+	cd exec && $(MAKE) exec
 
 clean:
 	for dir in $(DIRS); do (cd $$dir && $(MAKE) clean); done
